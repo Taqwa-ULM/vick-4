@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kuis Matematika Kontekstual - Almazaya Islamic School</title>
+  
+  <!-- Tailwind CSS & Fonts & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            fredoka: ['Fredoka', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              teal: '#0d9488',
+              lightTeal: '#ccfbf1',
+              orange: '#f97316',
+              yellow: '#f59e0b',
+              purple: '#8b5cf6',
+              rose: '#f43f5e',
+              indigo: '#6366f1',
+              emerald: '#10b981',
+            }
+          },
+          animation: {
+            'bounce-soft': 'bounce 2s infinite',
+            'pulse-glow': 'pulseGlow 2s infinite',
+            'float': 'float 3s ease-in-out infinite',
+            'wiggle': 'wiggle 0.5s ease-in-out infinite',
+          },
+          keyframes: {
+            pulseGlow: {
+              '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(13, 148, 136, 0.4)' },
+              '50%': { transform: 'scale(1.02)', boxShadow: '0 0 25px 8px rgba(13, 148, 136, 0.25)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            wiggle: {
+              '0%, 100%': { transform: 'rotate(-3deg)' },
+              '50%': { transform: 'rotate(3deg)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    * {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #064e3b 100%);
+      min-height: 100vh;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+    .interactive-canvas {
+      touch-action: none;
+      cursor: crosshair;
+    }
+    /* Confetti animation */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: #f59e0b;
+      opacity: 0.9;
+      animation: confettiFall 2.8s ease-out forwards;
+      pointer-events: none;
+      z-index: 99;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+  </style>
+</head>
+
+<body class="font-sans text-slate-800 flex justify-center items-center p-0 sm:p-3 md:p-6 select-none">
+
+  <!-- MAIN APP WRAPPER (RESPONSIVE FLUID CONTAINER FOR BOTH PORTRAIT & LANDSCAPE) -->
+  <div id="appContainer" class="w-full max-w-5xl bg-slate-900/90 backdrop-blur-xl min-h-screen sm:min-h-[700px] sm:max-h-[95vh] sm:rounded-3xl shadow-2xl flex flex-col border-0 sm:border-4 border-slate-700/60 overflow-hidden relative transition-all duration-300">
+    
+    <!-- HEADER BAR -->
+    <header class="bg-slate-800/90 border-b border-slate-700 px-4 py-3 flex items-center justify-between shrink-0 z-20">
+      <div class="flex items-center gap-3">
+        <div id="userAvatar" onclick="openStudentProfileModal()" class="w-10 h-10 rounded-2xl bg-amber-400 border-2 border-white flex items-center justify-center text-xl shadow-md cursor-pointer hover:scale-105 transition">
+          🦁
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-fredoka text-sm font-bold text-white leading-tight">ALMAZAYA ISLAMIC SCHOOL</span>
+            <span class="hidden sm:inline-block text-[10px] bg-emerald-500/20 text-emerald-300 font-extrabold px-2 py-0.5 rounded-full border border-emerald-500/30">Kelas 7 Adaptif</span>
+          </div>
+          <p class="text-xs text-slate-400 font-medium">Kuis Kontekstual • Siswa: <strong id="studentNameText" class="text-amber-400">VIC</strong></p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- SCORE / STREAK / COIN -->
+        <div class="hidden xs:flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-2xl border border-slate-700">
+          <div class="flex items-center gap-1">
+            <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+            <span id="quizScoreText" class="text-xs font-bold text-amber-300">0 Pt</span>
+          </div>
+          <span class="text-slate-600">|</span>
+          <div class="flex items-center gap-1">
+            <i class="fa-solid fa-coins text-yellow-400 text-xs"></i>
+            <span id="coinsText" class="text-xs font-bold text-yellow-300">280</span>
+          </div>
+        </div>
+
+        <!-- ORIENTATION HINT TOGGLE -->
+        <button onclick="toggleFullscreen()" class="p-2 text-slate-300 hover:text-white bg-slate-700/50 hover:bg-slate-700 rounded-xl transition" title="Layar Penuh">
+          <i class="fa-solid fa-expand text-sm"></i>
+        </button>
+
+        <!-- TEACHER DASHBOARD BUTTON -->
+        <button onclick="openTeacherModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition shadow-sm">
+          <i class="fa-solid fa-chalkboard-user"></i>
+          <span class="hidden sm:inline">Mr. Taqwa</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- DYNAMIC MAIN BODY (FLUID PORTRAIT & LANDSCAPE LAYOUT) -->
+    <main id="mainView" class="flex-grow overflow-y-auto p-4 sm:p-6 custom-scrollbar flex flex-col justify-between">
+      <!-- Content populated dynamically via JS -->
+    </main>
+
+    <!-- FOOTER NAV / QUICK ACTION BAR -->
+    <footer id="footerBar" class="bg-slate-800/80 border-t border-slate-700/80 px-4 py-2.5 flex items-center justify-between shrink-0 z-20">
+      <button onclick="showLobbyScreen()" class="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1.5 transition">
+        <i class="fa-solid fa-house"></i>
+        <span>Menu Utama</span>
+      </button>
+
+      <div class="flex items-center gap-2">
+        <button id="scratchpadBtn" onclick="toggleScratchpadOverlay()" class="bg-slate-700 hover:bg-slate-600 text-teal-300 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-pen-ruler"></i>
+          <span>Papan Corat-Coret</span>
+        </button>
+
+        <button id="speakQuestionBtn" onclick="speakCurrentQuestion()" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition shadow-sm">
+          <i class="fa-solid fa-volume-high"></i>
+          <span class="hidden xs:inline">Baca Soal</span>
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- SCRATCHPAD OVERLAY MODAL -->
+  <div id="scratchpadModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-3 sm:p-6">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full p-4 shadow-2xl flex flex-col gap-3">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <div class="flex items-center gap-2 text-teal-400 font-fredoka font-bold text-sm sm:text-base">
+          <i class="fa-solid fa-pen-ruler"></i>
+          <span>Papan Tulis Hitung VIC ✍️</span>
+        </div>
+        <button onclick="toggleScratchpadOverlay()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- CANVAS -->
+      <div class="relative bg-slate-950 rounded-2xl p-1 border border-slate-800 flex justify-center items-center">
+        <canvas id="scratchpadCanvas" width="500" height="320" class="interactive-canvas rounded-xl w-full max-w-full h-[280px] sm:h-[320px] bg-slate-950"></canvas>
+      </div>
+
+      <!-- TOOLS & COLOR PICKER -->
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <button onclick="setScratchpadColor('#2dd4bf')" class="w-8 h-8 rounded-full bg-teal-400 ring-2 ring-white shadow-sm"></button>
+          <button onclick="setScratchpadColor('#f59e0b')" class="w-8 h-8 rounded-full bg-amber-400 ring-2 ring-white shadow-sm"></button>
+          <button onclick="setScratchpadColor('#f43f5e')" class="w-8 h-8 rounded-full bg-rose-400 ring-2 ring-white shadow-sm"></button>
+          <button onclick="setScratchpadColor('#a855f7')" class="w-8 h-8 rounded-full bg-purple-400 ring-2 ring-white shadow-sm"></button>
+          <button onclick="setScratchpadColor('#38bdf8')" class="w-8 h-8 rounded-full bg-sky-400 ring-2 ring-white shadow-sm"></button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="clearScratchpadCanvas()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-3 py-2 rounded-xl text-xs transition flex items-center gap-1">
+            <i class="fa-solid fa-rotate-right"></i> Bersihkan
+          </button>
+          <button onclick="toggleScratchpadOverlay()" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1 shadow-md">
+            <i class="fa-solid fa-check"></i> Selesai Hitung
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEACHER DASHBOARD MODAL (MR. TAQWA) -->
+  <div id="teacherModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto space-y-4 custom-scrollbar text-slate-200">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg border border-amber-500/30">
+            <i class="fa-solid fa-chalkboard-user"></i>
+          </div>
+          <div>
+            <h3 class="font-fredoka text-base font-bold text-white leading-none">Dasbor Mr. Taqwa (Kuis Kontekstual)</h3>
+            <p class="text-[11px] text-slate-400 font-semibold mt-1">Almazaya Islamic School • Matematika Kelas 7 Inklusif</p>
+          </div>
+        </div>
+        <button onclick="closeTeacherModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 text-xs">
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Nama Siswa:</label>
+            <input type="text" id="teacherStudentName" value="VIC" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-bold text-white focus:outline-none focus:border-teal-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">Target Soal:</label>
+            <input type="text" readonly value="10 Soal Kontekstual" class="w-full px-3 py-2 bg-slate-950/50 border border-slate-800 rounded-xl font-bold text-slate-400">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">URL Web App Google Apps Script (GAS):</label>
+          <input type="url" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-teal-300 font-mono focus:outline-none focus:border-teal-500 text-[11px]">
+          <p class="text-[10px] text-slate-400 mt-1">Nilai & analisis kuis VIC terkirim langsung ke Spreadsheet Google Mr. Taqwa saat kuis selesai.</p>
+        </div>
+
+        <!-- Google Apps Script Code Block -->
+        <div class="bg-slate-950 p-3 rounded-2xl space-y-2 border border-slate-800">
+          <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+            <span class="text-[11px] font-bold text-emerald-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-code"></i> Kode Apps Script Spreadsheet:
+            </span>
+            <button onclick="copyGasCode()" class="text-[10px] bg-teal-600 hover:bg-teal-500 text-white font-bold px-2 py-0.5 rounded-lg transition flex items-center gap-1">
+              <i class="fa-regular fa-copy"></i> Salin
+            </button>
+          </div>
+          <textarea id="gasCodeText" readonly class="w-full h-24 bg-slate-900 text-teal-300 font-mono text-[10px] p-2 rounded-xl resize-none focus:outline-none border-0">
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+  sheet.appendRow([
+    new Date(),
+    "Almazaya Islamic School",
+    "Mr. Taqwa",
+    "Kuis Matematika Kontekstual Kelas 7",
+    data.studentName || "VIC",
+    data.score || 0,
+    data.correctCount || 0,
+    data.totalQuestions || 10,
+    data.accuracy || "100%",
+    data.status || "Selesai Kuis"
+  ]);
+  return ContentService.createTextOutput(JSON.stringify({status: "success"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+          </textarea>
+        </div>
+
+        <!-- History -->
+        <div>
+          <div class="flex justify-between items-center mb-1.5">
+            <h4 class="font-bold text-slate-300">Riwayat Hasil Kuis VIC:</h4>
+            <button onclick="clearQuizHistory()" class="text-[10px] text-rose-400 hover:underline">Hapus Riwayat</button>
+          </div>
+          <div id="quizHistoryList" class="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2 flex gap-2">
+        <button onclick="saveTeacherSettings()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-md">
+          <i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENT PROFILE MODAL -->
+  <div id="studentProfileModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-slate-700 space-y-4 text-center">
+      <h3 class="font-fredoka text-lg font-bold text-white">Pilih Maskot Siswa VIC 🎨</h3>
+      <div id="avatarPickerGrid" class="grid grid-cols-4 gap-3">
+        <!-- Rendered dynamically -->
+      </div>
+      <button onclick="closeStudentProfileModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded-xl text-xs transition">
+        Tutup
+      </button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC ENGINE -->
+  <script>
+    const quizState = {
+      schoolName: 'ALMAZAYA ISLAMIC SCHOOL',
+      teacherName: 'Mr. Taqwa',
+      studentName: localStorage.getItem('kmk_studentName') || 'VIC',
+      avatar: localStorage.getItem('kmk_avatar') || '🦁',
+      coins: parseInt(localStorage.getItem('kmk_coins')) || 280,
+      gasUrl: localStorage.getItem('kmk_gasUrl') || '',
+      quizHistory: JSON.parse(localStorage.getItem('kmk_quizHistory')) || [],
+      
+      // Quiz Runtime State
+      currentQuestionIndex: 0,
+      score: 0,
+      userAnswers: [],
+      selectedOptionIndex: null,
+      isAnswered: false,
+      
+      // Questions Bank (Contextual Stories tailored for VIC at Almazaya Islamic School)
+      questions: [
+        {
+          id: 1,
+          category: 'Kantin Almazaya',
+          icon: '🥪',
+          title: 'Total Belanja di Kantin',
+          story: 'VIC membeli 1 buah roti seharga Rp3.000 dan 1 kotak susu seharga Rp4.000 di kantin Almazaya Islamic School.',
+          questionText: 'Berapakah total uang yang harus dibayar oleh VIC?',
+          interactiveType: 'coins_calculator',
+          itemA: { name: 'Roti', price: 3000, img: '🥪' },
+          itemB: { name: 'Susu', price: 4000, img: '🧃' },
+          options: [
+            { text: 'Rp6.000', isCorrect: false },
+            { text: 'Rp7.000', isCorrect: true },
+            { text: 'Rp8.000', isCorrect: false },
+            { text: 'Rp5.000', isCorrect: false }
+          ],
+          hint: 'Hitunglah Rp3.000 + Rp4.000'
+        },
+        {
+          id: 2,
+          category: 'Jadwal Masuk Kelas',
+          icon: '⏰',
+          title: 'Jam Terlambat Sekolah',
+          story: 'Bel masuk kelas Almazaya berbunyi tepat pukul 07.00 pagi. Jika jam tangan VIC menunjukkan pukul 08.00 pagi.',
+          questionText: 'Berapa jam VIC terlambat masuk kelas?',
+          interactiveType: 'clock_simulator',
+          startHour: 7,
+          currentHour: 8,
+          options: [
+            { text: '1 jam', isCorrect: true },
+            { text: '2 jam', isCorrect: false },
+            { text: '3 jam', isCorrect: false },
+            { text: '0 jam', isCorrect: false }
+          ],
+          hint: 'Selisih dari pukul 07.00 ke 08.00 adalah 1 jam'
+        },
+        {
+          id: 3,
+          category: 'Lapangan Olahraga',
+          icon: '🏃',
+          title: 'Melangkah di Ubin Lapangan',
+          story: 'VIC berdiri di ubin nomor 8. VIC melangkah maju 5 ubin ke depan, lalu melangkah mundur 2 ubin.',
+          questionText: 'Di ubin nomor berapakah VIC berdiri sekarang?',
+          interactiveType: 'tile_stepper',
+          startTile: 8,
+          stepForward: 5,
+          stepBackward: 2,
+          options: [
+            { text: 'Nomor 10', isCorrect: false },
+            { text: 'Nomor 11', isCorrect: true },
+            { text: 'Nomor 12', isCorrect: false },
+            { text: 'Nomor 13', isCorrect: false }
+          ],
+          hint: 'Maju: 8 + 5 = 13. Mundur: 13 - 2 = 11'
+        },
+        {
+          id: 4,
+          category: 'Keseimbangan Benda',
+          icon: '⚖️',
+          title: 'Menyeimbangkan Timbangan Apel',
+          story: 'Mr. Taqwa menaruh 12 buah apel di timbangan sebelah kiri. Di sebelah kanan baru ada 7 buah apel.',
+          questionText: 'Berapa buah apel lagi yang harus ditambah di sebelah kanan agar timbangan seimbang?',
+          interactiveType: 'balance_scale',
+          leftCount: 12,
+          rightCount: 7,
+          targetAdd: 5,
+          options: [
+            { text: '3 buah apel', isCorrect: false },
+            { text: '4 buah apel', isCorrect: false },
+            { text: '5 buah apel', isCorrect: true },
+            { text: '6 buah apel', isCorrect: false }
+          ],
+          hint: 'Hitung selisihnya: 12 - 7 = 5'
+        },
+        {
+          id: 5,
+          category: 'Kantin Almazaya',
+          icon: '💵',
+          title: 'Uang Kembalian Buku',
+          story: 'VIC membayar sebuah buku latihan seharga Rp6.000 menggunakan selembar uang Rp10.000.',
+          questionText: 'Berapakah uang kembalian yang diterima VIC?',
+          interactiveType: 'money_change',
+          paid: 10000,
+          cost: 6000,
+          options: [
+            { text: 'Rp3.000', isCorrect: false },
+            { text: 'Rp4.000', isCorrect: true },
+            { text: 'Rp5.000', isCorrect: false },
+            { text: 'Rp2.000', isCorrect: false }
+          ],
+          hint: 'Hitung: Rp10.000 - Rp6.000 = Rp4.000'
+        },
+        {
+          id: 6,
+          category: 'Ten-Frame Kue',
+          icon: '🍩',
+          title: 'Menghitung Seluruh Donat',
+          story: 'Di kotak Ten-Frame pertama terdapat 10 kue donat penuh. Di kotak kedua terdapat 6 kue donat.',
+          questionText: 'Berapakah jumlah seluruh donat milik kelas VIC?',
+          interactiveType: 'ten_frame_donuts',
+          frame1: 10,
+          frame2: 6,
+          options: [
+            { text: '14 donat', isCorrect: false },
+            { text: '15 donat', isCorrect: false },
+            { text: '16 donat', isCorrect: true },
+            { text: '18 donat', isCorrect: false }
+          ],
+          hint: 'Hitung: 10 + 6 = 16'
+        },
+        {
+          id: 7,
+          category: 'Kegiatan Masjid',
+          icon: '🕌',
+          title: 'Waktu Pembelajaran Selesai',
+          story: 'Jadwal Sholat Zuhur berjamaah di masjid Almazaya adalah pukul 12.00. Jika pembelajaran kelas VIC selesai 1 jam sebelum Sholat Zuhur.',
+          questionText: 'Pukul berapakah pembelajaran selesai?',
+          interactiveType: 'clock_simulator',
+          startHour: 12,
+          currentHour: 11,
+          options: [
+            { text: 'Pukul 10.00', isCorrect: false },
+            { text: 'Pukul 11.00', isCorrect: true },
+            { text: 'Pukul 09.00', isCorrect: false },
+            { text: 'Pukul 01.00', isCorrect: false }
+          ],
+          hint: '1 jam sebelum pukul 12.00 adalah pukul 11.00'
+        },
+        {
+          id: 8,
+          category: 'Transportasi Sekolah',
+          icon: '🚌',
+          title: 'Jumlah Siswa di Bus Sekolah',
+          story: 'Bus sekolah Almazaya membawa 15 siswa. Di halte pertama turun 4 siswa, lalu di halte kedua naik 3 siswa baru.',
+          questionText: 'Berapakah jumlah siswa di dalam bus sekarang?',
+          interactiveType: 'bus_passengers',
+          initial: 15,
+          off: 4,
+          on: 3,
+          options: [
+            { text: '12 siswa', isCorrect: false },
+            { text: '13 siswa', isCorrect: false },
+            { text: '14 siswa', isCorrect: true },
+            { text: '15 siswa', isCorrect: false }
+          ],
+          hint: 'Hitung: 15 - 4 = 11, lalu 11 + 3 = 14'
+        },
+        {
+          id: 9,
+          category: 'Pecahan Uang',
+          icon: '🪙',
+          title: 'Selisih Uang Saku',
+          story: 'VIC memiliki 1 lembar Rp5.000 dan 2 koin Rp1.000 (total Rp7.000). Ahmad memiliki 1 lembar Rp10.000.',
+          questionText: 'Berapakah selisih uang saku VIC dan Ahmad?',
+          interactiveType: 'money_diff',
+          vicMoney: 7000,
+          ahmadMoney: 10000,
+          options: [
+            { text: 'Rp2.000', isCorrect: false },
+            { text: 'Rp3.000', isCorrect: true },
+            { text: 'Rp4.000', isCorrect: false },
+            { text: 'Rp1.000', isCorrect: false }
+          ],
+          hint: 'Hitung: Rp10.000 - Rp7.000 = Rp3.000'
+        },
+        {
+          id: 10,
+          category: 'Timbangan Buah',
+          icon: '🍉',
+          title: 'Timbangan Semangka & Melon',
+          story: 'Di timbangan sebelah kiri terdapat 1 semangka (15 kg). Di kanan terdapat 2 melon (8 kg dan 4 kg = 12 kg).',
+          questionText: 'Berapa kg beban yang harus ditambah di sebelah kanan agar seimbang?',
+          interactiveType: 'balance_weight',
+          leftWeight: 15,
+          rightWeight: 12,
+          options: [
+            { text: '2 kg', isCorrect: false },
+            { text: '3 kg', isCorrect: true },
+            { text: '4 kg', isCorrect: false },
+            { text: '5 kg', isCorrect: false }
+          ],
+          hint: 'Hitung selisih: 15 kg - 12 kg = 3 kg'
+        }
+      ]
+    };
+
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'id-ID';
+        utterance.rate = 0.86; // Gentle pace for VIC
+        utterance.pitch = 1.05;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function playSound(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'correct') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+          osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.12);
+          osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.24);
+          osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.36);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.6);
+        } else if (type === 'pop') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(320, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.25, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.08);
+        } else if (type === 'try_again') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(300, ctx.currentTime);
+          osc.frequency.setValueAtTime(250, ctx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.3);
+        }
+      } catch (e) {
+        console.log("Audio synthesized successfully");
+      }
+    }
+
+    function showLobbyScreen() {
+      const main = document.getElementById('mainView');
+      
+      main.innerHTML = `
+        <div class="space-y-5 my-auto animate-fade-in max-w-3xl mx-auto w-full">
+          <!-- HERO LOBBY BANNER -->
+          <div class="bg-gradient-to-br from-indigo-600 via-teal-600 to-emerald-600 rounded-3xl p-6 text-white relative overflow-hidden shadow-2xl border border-indigo-400/30">
+            <div class="relative z-10 space-y-3">
+              <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider">
+                <i class="fa-solid fa-graduation-cap text-amber-300"></i>
+                <span>Tingkat 2 • Soal Cerita Kontekstual</span>
+              </div>
+              
+              <h1 class="font-fredoka text-2xl sm:text-3xl font-bold leading-tight">
+                Kuis Matematika Kontekstual Almazaya 🎯
+              </h1>
+
+              <p class="text-xs sm:text-sm text-teal-50 max-w-xl leading-relaxed">
+                Halo <strong>${quizState.studentName}</strong>! Mari selesaikan <strong>10 Soal Cerita Kehidupan Nyata</strong> di sekolah bersama <strong>Mr. Taqwa</strong>!
+              </p>
+
+              <div class="pt-2 flex flex-wrap items-center gap-3">
+                <button onclick="startQuizGame()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-fredoka font-bold text-sm px-6 py-3 rounded-2xl shadow-xl hover:scale-105 transition flex items-center gap-2">
+                  <i class="fa-solid fa-play"></i> Mulai Kuis Sekarang
+                </button>
+                <button onclick="speakText('Selamat datang di Kuis Matematika Kontekstual Almazaya Islamic School! Tekan tombol kuning untuk mulai kuis bersama Mr. Taqwa.')" class="bg-white/10 hover:bg-white/20 text-white font-fredoka font-bold text-xs px-4 py-3 rounded-2xl transition flex items-center gap-2">
+                  <i class="fa-solid fa-volume-high text-amber-300"></i> Suara Panduan
+                </button>
+              </div>
+            </div>
+
+            <div class="absolute -right-4 -bottom-6 w-40 h-40 flex items-center justify-center text-8xl opacity-80 pointer-events-none animate-float">
+              🦁
+            </div>
+          </div>
+
+          <!-- GRID CATEGORIES OVERVIEW -->
+          <div>
+            <h3 class="font-fredoka text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-teal-400"></i>
+              <span>Cakupan Topik Soal Kontekstual VIC (10 Soal):</span>
+            </h3>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 flex flex-col items-center text-center">
+                <span class="text-2xl mb-1">🥪</span>
+                <span class="font-bold text-xs text-white">Kantin Almazaya</span>
+                <span class="text-[10px] text-slate-400 mt-0.5">Total Belanja & Kembalian</span>
+              </div>
+
+              <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 flex flex-col items-center text-center">
+                <span class="text-2xl mb-1">⏰</span>
+                <span class="font-bold text-xs text-white">Jam & Kegiatan</span>
+                <span class="text-[10px] text-slate-400 mt-0.5">Waktu Terlambat & Sholat</span>
+              </div>
+
+              <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 flex flex-col items-center text-center">
+                <span class="text-2xl mb-1">⚖️</span>
+                <span class="font-bold text-xs text-white">Timbangan Benda</span>
+                <span class="text-[10px] text-slate-400 mt-0.5">Keseimbangan Apel & Melon</span>
+              </div>
+
+              <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 flex flex-col items-center text-center">
+                <span class="text-2xl mb-1">🚌</span>
+                <span class="font-bold text-xs text-white">Bus & Ubin</span>
+                <span class="text-[10px] text-slate-400 mt-0.5">Penumpang & Langkah</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function startQuizGame() {
+      quizState.currentQuestionIndex = 0;
+      quizState.score = 0;
+      quizState.userAnswers = [];
+      renderQuestionScreen();
+    }
+
+    function renderQuestionScreen() {
+      quizState.isAnswered = false;
+      quizState.selectedOptionIndex = null;
+
+      const q = quizState.questions[quizState.currentQuestionIndex];
+      const main = document.getElementById('mainView');
+
+      speakText(`${q.category}. Soal nomor ${quizState.currentQuestionIndex + 1}: ${q.story} ${q.questionText}`);
+
+      // FLUID TWO-COLUMN LAYOUT IN LANDSCAPE, SINGLE-COLUMN IN PORTRAIT
+      main.innerHTML = `
+        <div class="space-y-4 max-w-4xl mx-auto w-full">
+          
+          <!-- PROGRESS TOP BAR -->
+          <div class="flex items-center justify-between bg-slate-800/90 border border-slate-700/80 px-4 py-2.5 rounded-2xl shadow-sm">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-xs">${q.id}</span>
+              <span class="font-fredoka text-xs font-bold text-slate-200">${q.category}</span>
+            </div>
+
+            <!-- PROGRESS BAR -->
+            <div class="flex items-center gap-3">
+              <div class="w-28 sm:w-40 bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                <div class="bg-teal-400 h-full transition-all duration-300" style="width: ${((quizState.currentQuestionIndex + 1) / quizState.questions.length) * 100}%"></div>
+              </div>
+              <span class="text-xs font-bold text-slate-400">${quizState.currentQuestionIndex + 1}/${quizState.questions.length}</span>
+            </div>
+          </div>
+
+          <!-- MAIN QUESTION & INTERACTIVE VISUAL CARD (GRID FOR RESPONSIVE) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+            
+            <!-- LEFT COLUMN: CONTEXTUAL STORY & INTERACTIVE SIMULATOR (LG: 7 COLS) -->
+            <div class="lg:col-span-7 bg-slate-800/90 border border-slate-700/80 rounded-3xl p-4 sm:p-5 space-y-3.5 shadow-lg">
+              <div class="flex items-center gap-2.5 text-amber-400 border-b border-slate-700/70 pb-2.5">
+                <span class="text-2xl">${q.icon}</span>
+                <h2 class="font-fredoka text-sm sm:text-base font-bold text-white">${q.title}</h2>
+              </div>
+
+              <!-- STORY NARRATIVE -->
+              <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
+                ${q.story}
+              </p>
+
+              <!-- QUESTION PROMPT -->
+              <div class="bg-teal-950/40 border border-teal-500/30 p-3 rounded-2xl text-xs sm:text-sm font-bold text-teal-300 flex items-start gap-2">
+                <i class="fa-solid fa-circle-question text-teal-400 text-base mt-0.5 shrink-0"></i>
+                <span>${q.questionText}</span>
+              </div>
+
+              <!-- DYNAMIC INTERACTIVE SIMULATOR HELPER -->
+              <div id="interactiveHelperContainer" class="bg-slate-950 p-3 sm:p-4 rounded-2xl border border-slate-800 min-h-[140px] flex items-center justify-center">
+                ${renderInteractiveHelper(q)}
+              </div>
+            </div>
+
+            <!-- RIGHT COLUMN: MULTIPLE CHOICE OPTIONS & ACTIONS (LG: 5 COLS) -->
+            <div class="lg:col-span-5 space-y-3">
+              <div class="bg-slate-800/90 border border-slate-700/80 rounded-3xl p-4 space-y-3 shadow-lg">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-slate-400">Pilih Jawaban VIC:</span>
+                  <button onclick="speakText('${q.hint}')" class="text-[11px] text-amber-400 hover:underline font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-lightbulb"></i> Petunjuk
+                  </button>
+                </div>
+
+                <!-- OPTIONS LIST -->
+                <div class="space-y-2.5">
+                  ${q.options.map((opt, idx) => `
+                    <button id="optionBtn-${idx}" onclick="selectAnswerOption(${idx})" 
+                      class="w-full text-left p-3.5 rounded-2xl font-fredoka font-bold text-xs sm:text-sm transition flex items-center justify-between border-2
+                      bg-slate-900/90 border-slate-700 text-slate-200 hover:border-teal-500 hover:bg-slate-800">
+                      <div class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-teal-400">
+                          ${['A', 'B', 'C', 'D'][idx]}
+                        </span>
+                        <span>${opt.text}</span>
+                      </div>
+                      <i id="optionCheckIcon-${idx}" class="fa-solid fa-circle text-slate-700 text-base"></i>
+                    </button>
+                  `).join('')}
+                </div>
+
+                <!-- SUBMIT / NEXT BUTTON -->
+                <button id="submitAnswerBtn" onclick="submitCurrentAnswer()" disabled 
+                  class="w-full bg-slate-700 text-slate-400 font-fredoka font-bold py-3 rounded-2xl transition text-xs sm:text-sm flex items-center justify-center gap-2 cursor-not-allowed">
+                  <span>Periksa Jawaban</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+
+              <!-- QUICK HINT CARD -->
+              <div class="bg-amber-500/10 border border-amber-500/20 p-3 rounded-2xl text-[11px] text-amber-300 flex items-center justify-between">
+                <span>💡 VIC bisa pakai <strong>Papan Corat-Coret</strong> untuk berhitung!</span>
+                <button onclick="toggleScratchpadOverlay()" class="underline font-bold">Buka</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function renderInteractiveHelper(q) {
+      if (q.interactiveType === 'coins_calculator') {
+        return `
+          <div class="w-full text-center space-y-2">
+            <div class="flex justify-center items-center gap-4">
+              <div class="bg-slate-900 p-2 rounded-2xl border border-slate-800 text-center">
+                <span class="text-3xl block">${q.itemA.img}</span>
+                <span class="text-[11px] font-bold text-slate-300 block">${q.itemA.name}</span>
+                <span class="text-[10px] text-teal-400 font-bold block">Rp3.000</span>
+              </div>
+              <span class="text-xl font-bold text-amber-400">+</span>
+              <div class="bg-slate-900 p-2 rounded-2xl border border-slate-800 text-center">
+                <span class="text-3xl block">${q.itemB.img}</span>
+                <span class="text-[11px] font-bold text-slate-300 block">${q.itemB.name}</span>
+                <span class="text-[10px] text-teal-400 font-bold block">Rp4.000</span>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400 font-semibold">Gabungkan kedua harga makanan kantin Almazaya!</p>
+          </div>
+        `;
+      } else if (q.interactiveType === 'clock_simulator') {
+        return `
+          <div class="flex items-center justify-center gap-6 py-1">
+            <div class="w-20 h-20 rounded-full bg-slate-900 border-4 border-teal-400 flex flex-col items-center justify-center font-fredoka font-bold text-white text-base shadow-inner">
+              <span>0${q.startHour}:00</span>
+              <span class="text-[9px] text-teal-400">Jam Masuk</span>
+            </div>
+            <i class="fa-solid fa-arrow-right text-slate-500 text-lg"></i>
+            <div class="w-20 h-20 rounded-full bg-slate-900 border-4 border-amber-400 flex flex-col items-center justify-center font-fredoka font-bold text-white text-base shadow-inner">
+              <span>0${q.currentHour}:00</span>
+              <span class="text-[9px] text-amber-400">Jam VIC</span>
+            </div>
+          </div>
+        `;
+      } else if (q.interactiveType === 'tile_stepper') {
+        return `
+          <div class="w-full overflow-x-auto custom-scrollbar py-2">
+            <div class="flex items-center justify-between min-w-[320px] px-2 border-b-2 border-emerald-500 pb-2">
+              ${[7, 8, 9, 10, 11, 12, 13].map(num => `
+                <div class="flex flex-col items-center">
+                  <span class="text-sm">${num === 8 ? '🏃' : (num === 11 ? '🚩' : '▫️')}</span>
+                  <span class="font-bold text-[11px] ${num === 11 ? 'text-teal-300 font-extrabold' : 'text-slate-400'}">${num}</span>
+                </div>
+              `).join('')}
+            </div>
+            <p class="text-[10px] text-slate-400 text-center mt-2">Ubin awal: 8 ➔ Maju 5 langkah (+5) ➔ Mundur 2 langkah (-2)</p>
+          </div>
+        `;
+      } else if (q.interactiveType === 'balance_scale') {
+        return `
+          <div class="w-full space-y-2">
+            <div class="flex justify-around items-center border-b-2 border-slate-700 pb-2">
+              <div class="text-center bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
+                <span class="text-[10px] text-slate-400 block font-bold">Kiri (Lengkap)</span>
+                <span class="text-xs font-bold text-teal-300">12 Apel 🍎</span>
+              </div>
+              <i class="fa-solid fa-scale-balanced text-amber-400 text-2xl"></i>
+              <div class="text-center bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
+                <span class="text-[10px] text-slate-400 block font-bold">Kanan (Baru Ada)</span>
+                <span class="text-xs font-bold text-amber-300">7 Apel 🍎</span>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400 text-center">Berapa apel lagi di kanan agar sama dengan 12?</p>
+          </div>
+        `;
+      } else if (q.interactiveType === 'money_change') {
+        return `
+          <div class="flex items-center justify-center gap-4 py-1">
+            <div class="bg-emerald-950/60 p-2 rounded-xl border border-emerald-500/30 text-center">
+              <span class="text-xl block">💵</span>
+              <span class="text-[10px] font-bold text-emerald-300">Uang VIC: Rp10.000</span>
+            </div>
+            <span class="text-slate-500 font-bold">-</span>
+            <div class="bg-rose-950/60 p-2 rounded-xl border border-rose-500/30 text-center">
+              <span class="text-xl block">📘</span>
+              <span class="text-[10px] font-bold text-rose-300">Harga Buku: Rp6.000</span>
+            </div>
+          </div>
+        `;
+      } else if (q.interactiveType === 'ten_frame_donuts') {
+        return `
+          <div class="w-full flex justify-center items-center gap-4">
+            <div class="bg-slate-900 p-2 rounded-2xl border border-slate-800 text-center">
+              <span class="text-xs font-bold text-teal-400 block mb-1">Ten-Frame 1</span>
+              <span class="text-sm tracking-widest block">🍩🍩🍩🍩🍩</span>
+              <span class="text-sm tracking-widest block">🍩🍩🍩🍩🍩</span>
+              <span class="text-[10px] font-bold text-slate-300 block mt-1">(10 Donat)</span>
+            </div>
+            <span class="text-xl font-bold text-amber-400">+</span>
+            <div class="bg-slate-900 p-2 rounded-2xl border border-slate-800 text-center">
+              <span class="text-xs font-bold text-amber-400 block mb-1">Ten-Frame 2</span>
+              <span class="text-sm tracking-widest block">🍩🍩🍩🍩🍩</span>
+              <span class="text-sm tracking-widest block">🍩</span>
+              <span class="text-[10px] font-bold text-slate-300 block mt-1">(6 Donat)</span>
+            </div>
+          </div>
+        `;
+      } else if (q.interactiveType === 'bus_passengers') {
+        return `
+          <div class="w-full text-center space-y-1">
+            <div class="inline-flex items-center gap-2 bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800">
+              <span class="text-2xl">🚌</span>
+              <span class="text-xs font-bold text-slate-200">Awal: 15 Siswa</span>
+              <span class="text-xs font-bold text-rose-400">➔ Turun 4 (-4)</span>
+              <span class="text-xs font-bold text-emerald-400">➔ Naik 3 (+3)</span>
+            </div>
+          </div>
+        `;
+      } else {
+        return `
+          <div class="text-center">
+            <span class="text-4xl block mb-1">${q.icon}</span>
+            <span class="text-xs font-bold text-slate-300">Simulasi Visual Aktivitas Matematika Kontekstual VIC</span>
+          </div>
+        `;
+      }
+    }
+
+    function selectAnswerOption(idx) {
+      if (quizState.isAnswered) return;
+
+      playSound('pop');
+      quizState.selectedOptionIndex = idx;
+      const q = quizState.questions[quizState.currentQuestionIndex];
+
+      q.options.forEach((_, i) => {
+        const btn = document.getElementById(`optionBtn-${i}`);
+        const icon = document.getElementById(`optionCheckIcon-${i}`);
+
+        if (i === idx) {
+          btn.className = "w-full text-left p-3.5 rounded-2xl font-fredoka font-bold text-xs sm:text-sm transition flex items-center justify-between border-2 bg-teal-950/80 border-teal-400 text-white shadow-md";
+          icon.className = "fa-solid fa-circle-dot text-teal-400 text-base";
+        } else {
+          btn.className = "w-full text-left p-3.5 rounded-2xl font-fredoka font-bold text-xs sm:text-sm transition flex items-center justify-between border-2 bg-slate-900/90 border-slate-700 text-slate-300 opacity-60";
+          icon.className = "fa-solid fa-circle text-slate-700 text-base";
+        }
+      });
+
+      const submitBtn = document.getElementById('submitAnswerBtn');
+      submitBtn.disabled = false;
+      submitBtn.className = "w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-fredoka font-bold py-3 rounded-2xl transition text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg hover:scale-102";
+    }
+
+    function submitCurrentAnswer() {
+      if (quizState.selectedOptionIndex === null || quizState.isAnswered) return;
+
+      quizState.isAnswered = true;
+      const q = quizState.questions[quizState.currentQuestionIndex];
+      const selectedOpt = q.options[quizState.selectedOptionIndex];
+      const isCorrect = selectedOpt.isCorrect;
+
+      quizState.userAnswers.push({
+        questionId: q.id,
+        category: q.category,
+        questionText: q.questionText,
+        selectedAnswer: selectedOpt.text,
+        correctAnswer: q.options.find(o => o.isCorrect).text,
+        isCorrect
+      });
+
+      const btn = document.getElementById(`optionBtn-${quizState.selectedOptionIndex}`);
+      const submitBtn = document.getElementById('submitAnswerBtn');
+
+      if (isCorrect) {
+        quizState.score += 10;
+        quizState.coins += 10;
+        document.getElementById('quizScoreText').textContent = `${quizState.score} Pt`;
+        document.getElementById('coinsText').textContent = quizState.coins;
+        localStorage.setItem('kmk_coins', quizState.coins);
+
+        playSound('correct');
+        triggerConfetti();
+        btn.className = "w-full text-left p-3.5 rounded-2xl font-fredoka font-bold text-xs sm:text-sm transition flex items-center justify-between border-2 bg-emerald-900 border-emerald-400 text-white shadow-lg";
+        speakText(`Hebat sekali VIC! Jawaban ${selectedOpt.text} kamu benar!`);
+      } else {
+        playSound('try_again');
+        btn.className = "w-full text-left p-3.5 rounded-2xl font-fredoka font-bold text-xs sm:text-sm transition flex items-center justify-between border-2 bg-rose-900/80 border-rose-500 text-white shadow-lg";
+        speakText(`Hampir tepat VIC. Jawaban yang benar adalah ${q.options.find(o => o.isCorrect).text}.`);
+      }
+
+      submitBtn.innerHTML = `<span>Lanjut Soal Berikutnya</span> <i class="fa-solid fa-arrow-right"></i>`;
+      submitBtn.onclick = advanceToNextQuestion;
+    }
+
+    function advanceToNextQuestion() {
+      if (quizState.currentQuestionIndex + 1 < quizState.questions.length) {
+        quizState.currentQuestionIndex++;
+        renderQuestionScreen();
+      } else {
+        showQuizResultsScreen();
+      }
+    }
+
+    function speakCurrentQuestion() {
+      const q = quizState.questions[quizState.currentQuestionIndex];
+      if (q) {
+        speakText(`${q.category}. ${q.story} ${q.questionText}`);
+      }
+    }
+
+    function showQuizResultsScreen() {
+      const totalCorrect = quizState.userAnswers.filter(a => a.isCorrect).length;
+      const accuracyPercent = Math.round((totalCorrect / quizState.questions.length) * 100);
+
+      // Record History & GAS
+      const record = {
+        date: new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'}),
+        score: quizState.score,
+        correctCount: totalCorrect,
+        accuracy: `${accuracyPercent}%`
+      };
+      quizState.quizHistory.unshift(record);
+      localStorage.setItem('kmk_quizHistory', JSON.stringify(quizState.quizHistory));
+
+      if (quizState.gasUrl) {
+        fetch(quizState.gasUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            studentName: quizState.studentName,
+            score: quizState.score,
+            correctCount: totalCorrect,
+            totalQuestions: quizState.questions.length,
+            accuracy: `${accuracyPercent}%`,
+            status: 'Selesai Kuis'
+          })
+        }).catch(err => console.log('GAS Sync error:', err));
+      }
+
+      speakText(`Luar biasa VIC! Kuis selesai! Kamu mendapatkan nilai ${quizState.score} poin dengan akurasi ${accuracyPercent} persen!`);
+
+      const main = document.getElementById('mainView');
+      main.innerHTML = `
+        <div class="space-y-5 max-w-2xl mx-auto w-full my-auto animate-fade-in text-center">
+          
+          <!-- RESULT HEADER CARD -->
+          <div class="bg-gradient-to-br from-indigo-900 via-slate-800 to-teal-900 border border-slate-700 rounded-3xl p-6 shadow-2xl space-y-4">
+            <div class="w-20 h-20 rounded-full bg-amber-400 border-4 border-white flex items-center justify-center text-4xl mx-auto shadow-lg animate-bounce-soft">
+              🏆
+            </div>
+
+            <div>
+              <span class="text-xs font-bold text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-500/30">Laporan Hasil Kuis Almazaya</span>
+              <h2 class="font-fredoka text-2xl sm:text-3xl font-bold text-white mt-2">Selamat, ${quizState.studentName}! 🎉</h2>
+              <p class="text-xs text-slate-300 mt-1">Mr. Taqwa sangat bangga dengan hasil usahamu hari ini!</p>
+            </div>
+
+            <!-- SCORE STATS GRID -->
+            <div class="grid grid-cols-3 gap-3 pt-2">
+              <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+                <span class="text-[10px] text-slate-400 font-bold block">Total Skor:</span>
+                <span class="font-fredoka text-xl font-bold text-amber-300">${quizState.score} Pt</span>
+              </div>
+
+              <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+                <span class="text-[10px] text-slate-400 font-bold block">Jawaban Benar:</span>
+                <span class="font-fredoka text-xl font-bold text-emerald-400">${totalCorrect}/${quizState.questions.length}</span>
+              </div>
+
+              <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+                <span class="text-[10px] text-slate-400 font-bold block">Tingkat Akurasi:</span>
+                <span class="font-fredoka text-xl font-bold text-teal-300">${accuracyPercent}%</span>
+              </div>
+            </div>
+
+            <!-- REPLAY OR RETURN BUTTONS -->
+            <div class="pt-3 flex flex-wrap gap-3 justify-center">
+              <button onclick="startQuizGame()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-fredoka font-bold text-xs px-5 py-3 rounded-2xl shadow-lg transition flex items-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> Ulangi Kuis Lagi
+              </button>
+              <button onclick="showLobbyScreen()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-fredoka font-bold text-xs px-5 py-3 rounded-2xl transition flex items-center gap-2 border border-slate-700">
+                <i class="fa-solid fa-house"></i> Kembali ke Menu
+              </button>
+            </div>
+          </div>
+
+          <!-- DETAILED ANSWER BREAKDOWN -->
+          <div class="bg-slate-800/90 border border-slate-700/80 rounded-3xl p-4 text-left space-y-2">
+            <h4 class="font-fredoka text-xs font-bold text-slate-300 mb-2">Rincian Jawaban Soal:</h4>
+            <div class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar text-xs">
+              ${quizState.userAnswers.map((ans, idx) => `
+                <div class="p-2.5 rounded-xl border flex items-center justify-between ${ans.isCorrect ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300' : 'bg-rose-950/40 border-rose-500/30 text-rose-300'}">
+                  <div>
+                    <span class="font-bold">${idx + 1}. ${ans.category}</span>
+                    <p class="text-[10px] text-slate-400">${ans.questionText}</p>
+                  </div>
+                  <div class="text-right shrink-0 ml-2">
+                    <span class="font-bold block">${ans.selectedAnswer}</span>
+                    <span class="text-[9px] ${ans.isCorrect ? 'text-emerald-400' : 'text-rose-400'}">${ans.isCorrect ? '✓ Benar' : '✗ Kunci: ' + ans.correctAnswer}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    let scratchpadColor = '#2dd4bf';
+
+    function toggleScratchpadOverlay() {
+      const modal = document.getElementById('scratchpadModal');
+      modal.classList.toggle('hidden');
+      if (!modal.classList.contains('hidden')) {
+        setTimeout(() => initScratchpadCanvas(), 80);
+      }
+    }
+
+    function setScratchpadColor(color) {
+      scratchpadColor = color;
+      playSound('pop');
+    }
+
+    function initScratchpadCanvas() {
+      const canvas = document.getElementById('scratchpadCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      
+      // Clear
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Faint grid lines for math calculation
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 30) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 30) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      let drawing = false;
+
+      const getPos = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: (clientX - rect.left) * (canvas.width / rect.width),
+          y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
+      };
+
+      const start = (e) => {
+        drawing = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      };
+
+      const draw = (e) => {
+        if (!drawing) return;
+        const pos = getPos(e);
+        ctx.strokeStyle = scratchpadColor;
+        ctx.lineWidth = 6;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      };
+
+      const stop = () => { drawing = false; };
+
+      canvas.onmousedown = start;
+      canvas.onmousemove = draw;
+      canvas.onmouseup = stop;
+
+      canvas.ontouchstart = (e) => { start(e); e.preventDefault(); };
+      canvas.ontouchmove = (e) => { draw(e); e.preventDefault(); };
+      canvas.ontouchend = stop;
+    }
+
+    function clearScratchpadCanvas() {
+      initScratchpadCanvas();
+      playSound('pop');
+    }
+
+    function openTeacherModal() {
+      document.getElementById('teacherStudentName').value = quizState.studentName;
+      document.getElementById('gasUrlInput').value = quizState.gasUrl;
+      renderQuizHistoryList();
+      document.getElementById('teacherModal').classList.remove('hidden');
+    }
+
+    function closeTeacherModal() {
+      document.getElementById('teacherModal').classList.add('hidden');
+    }
+
+    function saveTeacherSettings() {
+      quizState.studentName = document.getElementById('teacherStudentName').value || 'VIC';
+      quizState.gasUrl = document.getElementById('gasUrlInput').value.trim();
+
+      localStorage.setItem('kmk_studentName', quizState.studentName);
+      localStorage.setItem('kmk_gasUrl', quizState.gasUrl);
+
+      document.getElementById('studentNameText').textContent = quizState.studentName;
+      closeTeacherModal();
+    }
+
+    function renderQuizHistoryList() {
+      const container = document.getElementById('quizHistoryList');
+      if (quizState.quizHistory.length === 0) {
+        container.innerHTML = `<p class="text-slate-500 text-[11px] text-center py-2">Belum ada riwayat hasil kuis.</p>`;
+        return;
+      }
+
+      container.innerHTML = quizState.quizHistory.map(h => `
+        <div class="bg-slate-950 p-2 rounded-xl flex justify-between items-center border border-slate-800">
+          <div>
+            <span class="font-bold text-white text-xs">${h.date}</span>
+            <p class="text-[10px] text-slate-400">Akurasi: ${h.accuracy} (${h.correctCount}/10)</p>
+          </div>
+          <span class="font-bold text-amber-400 text-xs">${h.score} Pt</span>
+        </div>
+      `).join('');
+    }
+
+    function clearQuizHistory() {
+      quizState.quizHistory = [];
+      localStorage.removeItem('kmk_quizHistory');
+      renderQuizHistoryList();
+    }
+
+    function copyGasCode() {
+      const code = document.getElementById('gasCodeText').value;
+      navigator.clipboard.writeText(code);
+      alert('Kode Apps Script Spreadsheet berhasil disalin!');
+    }
+
+    function openStudentProfileModal() {
+      const grid = document.getElementById('avatarPickerGrid');
+      const emojis = ['🦁', '🦊', '🐼', '🦖', '🦄', '🐸', '🚀', '⭐'];
+      grid.innerHTML = emojis.map(e => `
+        <button onclick="selectStudentAvatar('${e}')" class="w-12 h-12 text-2xl rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition hover:scale-105">
+          ${e}
+        </button>
+      `).join('');
+      document.getElementById('studentProfileModal').classList.remove('hidden');
+    }
+
+    function closeStudentProfileModal() {
+      document.getElementById('studentProfileModal').classList.add('hidden');
+    }
+
+    function selectStudentAvatar(emoji) {
+      quizState.avatar = emoji;
+      localStorage.setItem('kmk_avatar', emoji);
+      document.getElementById('userAvatar').textContent = emoji;
+      closeStudentProfileModal();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    function triggerConfetti() {
+      for (let i = 0; i < 22; i++) {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.backgroundColor = ['#f59e0b', '#0d9488', '#8b5cf6', '#10b981'][Math.floor(Math.random() * 4)];
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 2800);
+      }
+    }
+
+    window.onload = function() {
+      document.getElementById('studentNameText').textContent = quizState.studentName;
+      document.getElementById('userAvatar').textContent = quizState.avatar;
+      document.getElementById('coinsText').textContent = quizState.coins;
+      showLobbyScreen();
+    }
+  </script>
+</body>
+</html>
