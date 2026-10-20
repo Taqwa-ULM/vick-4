@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Aljabar Vick Praditya Podutolo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Lexend for High Legibility -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandYellow: '#FFDE59',
+                        brandOrange: '#FF914D',
+                        brandGreen: '#7ED957',
+                        brandBlue: '#5271FF',
+                        brandPurple: '#8C52FF',
+                        softBg: '#F0F4F8'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        lexend: ['Lexend', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: #F0F4F8;
+            user-select: none;
+        }
+        h1, h2, h3, button {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .btn-bounce {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+        .pulse-focus {
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0px rgba(82, 113, 255, 0.7); }
+            70% { box-shadow: 0 0 0 14px rgba(82, 113, 255, 0); }
+            100% { box-shadow: 0 0 0 0px rgba(82, 113, 255, 0); }
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Top Bar -->
+    <header class="bg-white shadow-sm border-b-4 border-brandBlue sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="showSection('menu')">
+                <span class="text-3xl">🍎</span>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold text-brandBlue tracking-wide leading-tight">Aljabar Ceria</h1>
+                    <p class="text-xs text-slate-500 font-semibold">Khusus: <span class="text-purple-600 font-bold">Vick Praditya Podutolo</span></p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Stars Counter -->
+                <div class="bg-amber-100 border-2 border-amber-400 px-3 py-1 rounded-full flex items-center gap-1 font-bold text-amber-700 text-sm md:text-base shadow-sm">
+                    <i class="fa-solid fa-star text-amber-500 text-lg"></i>
+                    <span id="starCount">0</span>
+                </div>
+                <!-- Sound Toggle -->
+                <button onclick="toggleAudio()" id="soundBtn" class="bg-slate-100 hover:bg-slate-200 p-2 rounded-full w-10 h-10 flex items-center justify-center text-slate-600 transition shadow-sm">
+                    <i class="fa-solid fa-volume-high text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto w-full p-4 flex-grow flex flex-col justify-center">
+
+        <!-- ================= MAIN MENU ================= -->
+        <section id="menuSection" class="space-y-6 text-center my-auto">
+            <div class="bg-white p-6 rounded-3xl shadow-lg border-4 border-brandBlue/30 space-y-3 relative overflow-hidden">
+                <div class="inline-block bg-amber-200 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase mb-1">
+                    ⭐ Siswa Hebat Hari Ini
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800">
+                    Halo, <span class="text-brandBlue">Vick Praditya Podutolo</span>! 👋
+                </h2>
+                <p class="text-slate-600 text-base md:text-lg">
+                    Yuk petualangan matematika hari ini! Pilih menu di bawah ini ya:
+                </p>
+                <button onclick="speakWelcome()" class="mt-2 bg-purple-100 hover:bg-purple-200 text-purple-700 px-4 py-2 rounded-xl text-sm font-bold inline-flex items-center gap-2 border border-purple-300">
+                    <i class="fa-solid fa-volume-high"></i> Dengarkan Sapaan
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Menu 1: Ringkasan Catatan A -->
+                <button onclick="showSection('catatanA')" class="btn-bounce bg-emerald-50 hover:bg-emerald-100 border-4 border-emerald-400 p-5 rounded-3xl text-left flex items-center gap-4 shadow-md">
+                    <div class="bg-emerald-400 text-white p-4 rounded-2xl text-3xl shrink-0">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Bagian A</span>
+                        <h3 class="text-lg md:text-xl font-bold text-slate-800">Catatan: Unsur Aljabar</h3>
+                        <p class="text-xs md:text-sm text-slate-500">Materi ringkas untuk dicatat Vick</p>
+                    </div>
+                </button>
+
+                <!-- Menu 2: Game Unsur Aljabar -->
+                <button onclick="startGame1()" class="btn-bounce bg-amber-50 hover:bg-amber-100 border-4 border-amber-400 p-5 rounded-3xl text-left flex items-center gap-4 shadow-md pulse-focus">
+                    <div class="bg-amber-400 text-white p-4 rounded-2xl text-3xl shrink-0">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-amber-600 uppercase tracking-wider">Mini Game 1</span>
+                        <h3 class="text-lg md:text-xl font-bold text-slate-800">Detektif Unsur</h3>
+                        <p class="text-xs md:text-sm text-slate-500">Tebak angka & huruf + Pembahasan!</p>
+                    </div>
+                </button>
+
+                <!-- Menu 3: Ringkasan Catatan B -->
+                <button onclick="showSection('catatanB')" class="btn-bounce bg-sky-50 hover:bg-sky-100 border-4 border-sky-400 p-5 rounded-3xl text-left flex items-center gap-4 shadow-md">
+                    <div class="bg-sky-400 text-white p-4 rounded-2xl text-3xl shrink-0">
+                        <i class="fa-solid fa-pencil"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-sky-600 uppercase tracking-wider">Bagian B</span>
+                        <h3 class="text-lg md:text-xl font-bold text-slate-800">Catatan: Operasi Buah</h3>
+                        <p class="text-xs md:text-sm text-slate-500">Tambah & Kurang buah sejenis</p>
+                    </div>
+                </button>
+
+                <!-- Menu 4: Game Operasi Aljabar -->
+                <button onclick="startGame2()" class="btn-bounce bg-purple-50 hover:bg-purple-100 border-4 border-purple-400 p-5 rounded-3xl text-left flex items-center gap-4 shadow-md">
+                    <div class="bg-purple-400 text-white p-4 rounded-2xl text-3xl shrink-0">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Mini Game 2</span>
+                        <h3 class="text-lg md:text-xl font-bold text-slate-800">Pesta Buah Aljabar</h3>
+                        <p class="text-xs md:text-sm text-slate-500">Kelompokkan & hitung bersama</p>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= CATATAN A: UNSUR-UNSUR BENTUK ALJABAR ================= -->
+        <section id="catatanA" class="hidden space-y-5">
+            <div class="flex justify-between items-center">
+                <button onclick="showSection('menu')" class="btn-bounce bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-xl text-slate-700 font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Menu
+                </button>
+                <button onclick="speakText('textCatatanA')" class="bg-brandBlue hover:bg-blue-600 text-white px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-volume-high"></i> Bacakan Teks
+                </button>
+            </div>
+
+            <div id="textCatatanA" class="bg-white p-5 md:p-7 rounded-3xl shadow-lg border-4 border-emerald-400 space-y-6">
+                <div class="border-b-2 border-slate-100 pb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-xl md:text-2xl font-bold text-emerald-600">📝 Catatan A: Unsur-Unsur Aljabar</h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">📌 Salin ke Buku Tulis Vick</span>
+                </div>
+
+                <!-- Visual Contoh Ringkas -->
+                <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-300 text-center space-y-2">
+                    <p class="text-sm font-bold text-amber-800">Contoh Bentuk Aljabar Sederhana:</p>
+                    <div class="text-3xl md:text-4xl font-bold text-slate-800 tracking-wider">
+                        <span class="text-blue-600">3</span><span class="text-red-500">a</span> <span class="text-slate-600">+</span> <span class="text-emerald-600">5</span>
+                    </div>
+                    <p class="text-xs text-slate-600 font-medium">(Artinya: 3 Apel ditambah 5 Keranjang)</p>
+                </div>
+
+                <!-- Poin Ringkas Catatan -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                    <div class="bg-red-50 p-4 rounded-2xl border border-red-200 space-y-1">
+                        <span class="font-bold text-red-600 block text-base">1. Variabel (Huruf)</span>
+                        <p class="text-slate-600">Simbol berupa huruf kecil.<br>Contoh: <b class="text-red-500 text-lg">a, x, y</b></p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 space-y-1">
+                        <span class="font-bold text-blue-600 block text-base">2. Koefisien (Angka Depan)</span>
+                        <p class="text-slate-600">Angka yang menempel di depan huruf.<br>Contoh: angka <b class="text-blue-600 text-lg">3</b> pada 3a.</p>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 space-y-1">
+                        <span class="font-bold text-emerald-600 block text-base">3. Konstanta (Angka Sendiri)</span>
+                        <p class="text-slate-600">Angka yang berdiri sendiri tanpa huruf.<br>Contoh: <b class="text-emerald-600 text-lg">+5</b></p>
+                    </div>
+                </div>
+
+                <!-- Pengertian Suku -->
+                <div class="bg-purple-50 p-4 rounded-2xl border border-purple-200 text-sm">
+                    <span class="font-bold text-purple-700 block text-base">4. Suku</span>
+                    <p class="text-slate-600 mt-1 leading-relaxed">
+                        Kelompok yang dipisahkan tanda tambah (+) atau kurang (-).<br>
+                        Bentuk <b class="text-slate-800">3a + 5</b> punya <b>2 Suku</b>, yaitu: 
+                        <span class="bg-white px-2 py-0.5 rounded border border-purple-300 text-purple-700 font-bold inline-block my-1">3a</span> dan 
+                        <span class="bg-white px-2 py-0.5 rounded border border-purple-300 text-purple-700 font-bold inline-block my-1">+5</span>.
+                    </p>
+                </div>
+            </div>
+
+            <button onclick="startGame1()" class="w-full btn-bounce bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold p-4 rounded-2xl shadow-md text-center text-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-gamepad"></i> Vick, Ayo Main Game 1 Sekarang!
+            </button>
+        </section>
+
+        <!-- ================= CATATAN B: SIFAT DAN OPERASI ALJABAR ================= -->
+        <section id="catatanB" class="hidden space-y-5">
+            <div class="flex justify-between items-center">
+                <button onclick="showSection('menu')" class="btn-bounce bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-xl text-slate-700 font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Menu
+                </button>
+                <button onclick="speakText('textCatatanB')" class="bg-brandBlue hover:bg-blue-600 text-white px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-volume-high"></i> Bacakan Teks
+                </button>
+            </div>
+
+            <div id="textCatatanB" class="bg-white p-5 md:p-7 rounded-3xl shadow-lg border-4 border-sky-400 space-y-6">
+                <div class="border-b-2 border-slate-100 pb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-xl md:text-2xl font-bold text-sky-600">📝 Catatan B: Penjumlahan & Sifat Aljabar</h2>
+                    <span class="text-xs bg-sky-100 text-sky-800 font-bold px-3 py-1 rounded-full">📌 Salin ke Buku Tulis Vick</span>
+                </div>
+
+                <!-- Aturan Utama -->
+                <div class="bg-red-50 p-4 rounded-2xl border-2 border-red-300 text-center space-y-1">
+                    <p class="font-bold text-red-600 text-base">⚠️ Aturan Emas Operasi Aljabar:</p>
+                    <p class="text-base font-bold text-slate-800">"Hanya Huruf/Buah yang SEJENIS (Sama) yang Boleh Dijumlahkan atau Dikurangi!"</p>
+                </div>
+
+                <!-- Contoh Penjumlahan Suku Sejenis -->
+                <div class="space-y-3">
+                    <h3 class="font-bold text-slate-800">1. Suku Sejenis (Bisa Dijumlahkan)</h3>
+                    <div class="bg-sky-50 p-4 rounded-2xl border border-sky-200 flex flex-col md:flex-row items-center justify-between gap-3 text-sm">
+                        <div class="text-center md:text-left">
+                            <span class="font-bold text-xl text-slate-800">2a + 3a = 5a</span>
+                            <p class="text-slate-600 text-xs mt-1">2 Apel + 3 Apel = 5 Apel (BISA! Karena sama-sama huruf 'a')</p>
+                        </div>
+                        <span class="text-2xl bg-white p-2 rounded-xl border border-sky-200">🍎🍎 + 🍎🍎🍎</span>
+                    </div>
+                </div>
+
+                <!-- Suku Tak Sejenis -->
+                <div class="space-y-3">
+                    <h3 class="font-bold text-slate-800">2. Suku Tak Sejenis (TIDAK Boleh Dijumlahkan)</h3>
+                    <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 flex flex-col md:flex-row items-center justify-between gap-3 text-sm">
+                        <div class="text-center md:text-left">
+                            <span class="font-bold text-xl text-slate-800">2a + 3b = 2a + 3b</span>
+                            <p class="text-slate-600 text-xs mt-1">2 Apel + 3 Pisang = Tetap! (TIDAK BISA digabung)</p>
+                        </div>
+                        <span class="text-2xl bg-white p-2 rounded-xl border border-amber-200">🍎🍎 + 🍌🍌🍌</span>
+                    </div>
+                </div>
+
+                <!-- Sifat Distributif Sederhana -->
+                <div class="space-y-2">
+                    <h3 class="font-bold text-slate-800">3. Perkalian Perkumpulan (Distributif)</h3>
+                    <div class="bg-purple-50 p-4 rounded-2xl border border-purple-200 text-sm text-center">
+                        <span class="font-bold text-purple-700 text-lg block">2 × (a + b) = 2a + 2b</span>
+                        <p class="text-slate-600 text-xs mt-1">Kalikan angka luar ke setiap anggota di dalam kurung satu per satu.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startGame2()" class="w-full btn-bounce bg-purple-500 hover:bg-purple-600 text-white font-bold p-4 rounded-2xl shadow-md text-center text-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-gamepad"></i> Vick, Mainkan Game 2 Sekarang!
+            </button>
+        </section>
+
+        <!-- ================= MINI GAME 1: DETEKTIF UNSUR ================= -->
+        <section id="game1Section" class="hidden space-y-5">
+            <div class="flex justify-between items-center">
+                <button onclick="showSection('menu')" class="btn-bounce bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-xl text-slate-700 font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Keluar Game
+                </button>
+                <div class="text-right">
+                    <span class="text-xs text-slate-500 font-bold block">TANTANGAN VICK</span>
+                    <span id="g1Level" class="text-base font-bold text-brandBlue">Soal 1 dari 5</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl shadow-lg border-4 border-amber-400 space-y-6 text-center relative">
+                <div>
+                    <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase">Misi Detektif Vick</span>
+                    <h2 id="g1QuestionText" class="text-lg md:text-xl font-bold text-slate-800 mt-2">Temukan mana yang merupakan VARIABEL (Huruf)!</h2>
+                </div>
+
+                <!-- Soal Visual Besar -->
+                <div class="bg-slate-100 p-6 rounded-2xl border-2 border-slate-200 inline-block min-w-[220px]">
+                    <span id="g1AlgebraDisplay" class="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-wider">5x + 3</span>
+                </div>
+
+                <!-- Pilihan Jawaban Tombol-Tombol Besar -->
+                <div id="g1Options" class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+                    <!-- Dynamic Buttons Generated via JS -->
+                </div>
+
+                <div class="pt-2 flex justify-center">
+                    <button onclick="readCurrentG1Question()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-volume-high"></i> Bacakan Soal Ini
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= MINI GAME 2: PESTA BUAH ALJABAR ================= -->
+        <section id="game2Section" class="hidden space-y-5">
+            <div class="flex justify-between items-center">
+                <button onclick="showSection('menu')" class="btn-bounce bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-xl text-slate-700 font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Keluar Game
+                </button>
+                <div class="text-right">
+                    <span class="text-xs text-slate-500 font-bold block">TANTANGAN VICK</span>
+                    <span id="g2Level" class="text-base font-bold text-purple-600">Soal 1 dari 4</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl shadow-lg border-4 border-purple-400 space-y-6 text-center">
+                <div>
+                    <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full uppercase">Operasi Buah Aljabar</span>
+                    <h2 id="g2QuestionText" class="text-lg md:text-xl font-bold text-slate-800 mt-2">Berapa hasil penjumlahan suku sejenis ini?</h2>
+                </div>
+
+                <!-- Visualisasi Gambar/Buah -->
+                <div class="bg-purple-50 p-6 rounded-2xl border-2 border-purple-200 flex flex-col items-center justify-center gap-3">
+                    <div id="g2VisualExpr" class="text-2xl md:text-3xl font-extrabold text-purple-900 tracking-wider flex items-center gap-2 flex-wrap justify-center">
+                        <!-- e.g., 2a + 4a -->
+                    </div>
+                    <div id="g2VisualFruits" class="text-3xl md:text-4xl flex items-center justify-center gap-2 flex-wrap">
+                        <!-- Emoji buah visual -->
+                    </div>
+                </div>
+
+                <!-- Pilihan Jawaban -->
+                <div id="g2Options" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <!-- Dynamic Buttons -->
+                </div>
+
+                <div class="pt-2 flex justify-center">
+                    <button onclick="readCurrentG2Question()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-volume-high"></i> Bacakan Soal Ini
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL PEMBAHASAN & INSTRUKSI MENCATAT JAWABAN (SANGAT IMPORTANT UNTUK VICK & GURU) -->
+    <div id="explanationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-4 border-amber-400 space-y-5 animate-bounce-in">
+            <!-- Modal Header -->
+            <div id="modalHeaderBg" class="p-4 rounded-2xl text-center space-y-1">
+                <div id="modalStatusIcon" class="text-4xl mb-1">💡</div>
+                <h3 id="modalTitle" class="text-xl md:text-2xl font-bold text-slate-800">Pembahasan untuk Vick</h3>
+            </div>
+
+            <!-- Modal Body Text -->
+            <div class="space-y-3">
+                <p id="modalExplanationText" class="text-slate-700 text-base leading-relaxed font-medium bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <!-- Text pembahasan dimasukkan via JS -->
+                </p>
+
+                <!-- Box Instruksi Catat untuk Vick -->
+                <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-300 space-y-2">
+                    <div class="flex items-center gap-2 text-amber-800 font-bold text-sm">
+                        <i class="fa-solid fa-pen-to-square text-amber-600 text-lg"></i>
+                        <span>Instruksi Catat di Buku Tulis Vick:</span>
+                    </div>
+                    <p id="modalNoteInstruction" class="text-xs md:text-sm text-slate-800 font-bold bg-white p-3 rounded-xl border border-amber-200 font-mono">
+                        "Tulis jawaban ini di buku..."
+                    </p>
+                </div>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-2 pt-1">
+                <button onclick="speakModalText()" class="bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-3 px-4 rounded-2xl text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-volume-high"></i> Bacakan Pembahasan
+                </button>
+                <button id="modalNextBtn" onclick="closeModalAndContinue()" class="flex-grow bg-brandBlue hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-2xl text-sm shadow flex items-center justify-center gap-2">
+                    Lanjut Soal Berikutnya <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-xs text-slate-400">
+        <p>Media Pembelajaran Aljabar Khusus untuk <b>Vick Praditya Podutolo</b> &bull; Semangat Belajar! ⭐</p>
+    </footer>
+
+    <!-- Audio Context & Script -->
+    <script>
+        // Audio Synthesizer for SFX
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let soundEnabled = true;
+        let starPoints = 0;
+
+        function playSound(type) {
+            if(!soundEnabled) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3); // A5
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+                    osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.3); // A2
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'star') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                    osc.frequency.exponentialRampToValueAtTime(1174.66, audioCtx.currentTime + 0.4); // D6
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                }
+            } catch(e){}
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('soundBtn');
+            if(soundEnabled) {
+                btn.innerHTML = '<i class="fa-solid fa-volume-high text-lg"></i>';
+                btn.classList.remove('text-slate-400');
+                btn.classList.add('text-slate-600');
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-volume-xmark text-lg"></i>';
+                btn.classList.add('text-slate-400');
+            }
+        }
+
+        // Text-to-Speech Helper for ABK Vick Praditya Podutolo
+        function speakTextRaw(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.82; // Pelan dan jelas untuk Vick
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function speakText(elementId) {
+            const el = document.getElementById(elementId);
+            if(el) {
+                speakTextRaw(el.innerText);
+            }
+        }
+
+        function speakWelcome() {
+            speakTextRaw("Halo Vick Praditya Podutolo! Selamat datang di aplikasi Aljabar Ceria. Mari kita belajar dan bermain game aljabar bersama hari ini!");
+        }
+
+        function addStars(num) {
+            starPoints += num;
+            document.getElementById('starCount').innerText = starPoints;
+            playSound('star');
+            confetti({
+                particleCount: 50,
+                spread: 70,
+                origin: { y: 0.8 }
+            });
+        }
+
+        function showSection(sectionId) {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            
+            document.getElementById('menuSection').classList.add('hidden');
+            document.getElementById('catatanA').classList.add('hidden');
+            document.getElementById('catatanB').classList.add('hidden');
+            document.getElementById('game1Section').classList.add('hidden');
+            document.getElementById('game2Section').classList.add('hidden');
+
+            if(sectionId === 'menu') document.getElementById('menuSection').classList.remove('hidden');
+            if(sectionId === 'catatanA') document.getElementById('catatanA').classList.remove('hidden');
+            if(sectionId === 'catatanB') document.getElementById('catatanB').classList.remove('hidden');
+            if(sectionId === 'game1') document.getElementById('game1Section').classList.remove('hidden');
+            if(sectionId === 'game2') document.getElementById('game2Section').classList.remove('hidden');
+        }
+
+        const game1Data = [
+            {
+                expr: "5x + 3",
+                targetType: "VARIABEL (Huruf)",
+                correct: "x",
+                options: ["5", "x", "3"],
+                explanation: "Hebat sekali Vick! 'x' adalah VARIABEL karena berupa huruf.",
+                wrongExplanation: "Kurang tepat Vick. Ingat! Variabel adalah Simbol Huruf (seperti x, a, atau b). Pada 5x + 3, hurufnya adalah 'x'.",
+                noteToWrite: "Variabel dari 5x + 3 adalah x (Variabel = Huruf)"
+            },
+            {
+                expr: "3a + 7",
+                targetType: "KOEFISIEN (Angka di Depan Huruf)",
+                correct: "3",
+                options: ["3", "a", "7"],
+                explanation: "Pintar Vick! '3' adalah KOEFISIEN karena menempel di depan huruf 'a'.",
+                wrongExplanation: "Hampir tepat Vick! Koefisien adalah angka yang MENEMPEL tepat di depan huruf. Pada 3a + 7, angka di depan 'a' adalah '3'.",
+                noteToWrite: "Koefisien dari 3a + 7 adalah 3 (Koefisien = Angka teman huruf)"
+            },
+            {
+                expr: "2y + 9",
+                targetType: "KONSTANTA (Angka Sendirian)",
+                correct: "9",
+                options: ["2", "y", "9"],
+                explanation: "Luar biasa Vick! '9' adalah KONSTANTA karena berdiri sendiri tanpa ada huruf di sampingnya.",
+                wrongExplanation: "Perhatikan lagi Vick! Konstanta adalah angka yang BERDIRI SENDIRI tanpa ada huruf. Pada 2y + 9, angka yang tidak punya huruf adalah 9.",
+                noteToWrite: "Konstanta dari 2y + 9 adalah 9 (Konstanta = Angka Sendirian)"
+            },
+            {
+                expr: "7b - 4",
+                targetType: "VARIABEL (Huruf)",
+                correct: "b",
+                options: ["7", "b", "4"],
+                explanation: "Bagus sekali Vick! 'b' adalah variabelnya.",
+                wrongExplanation: "Variabel adalah hurufnya ya Vick! Pada 7b - 4, hurufnya adalah 'b'.",
+                noteToWrite: "Variabel dari 7b - 4 adalah b"
+            },
+            {
+                expr: "6m + 2",
+                targetType: "BANYAKNYA SUKU",
+                correct: "2 Suku",
+                options: ["1 Suku", "2 Suku", "3 Suku"],
+                explanation: "Keren Vick! Ada 2 suku (6m dan 2) yang dipisahkan oleh tanda tambah (+).",
+                wrongExplanation: "Yuk dihitung kelompoknya Vick! Bentuk 6m + 2 dipisahkan tanda (+), jadi ada 2 kelompok (Suku 1: 6m, Suku 2: 2). Totalnya ada 2 Suku.",
+                noteToWrite: "Bentuk 6m + 2 terdiri dari 2 Suku (yaitu 6m dan 2)"
+            }
+        ];
+
+        let g1Index = 0;
+        let activeGame = 1;
+
+        function startGame1() {
+            g1Index = 0;
+            activeGame = 1;
+            showSection('game1');
+            loadG1Question();
+        }
+
+        function loadG1Question() {
+            const current = game1Data[g1Index];
+            document.getElementById('g1Level').innerText = `Soal ${g1Index + 1} dari ${game1Data.length}`;
+            document.getElementById('g1QuestionText').innerText = `Vick, cari mana yang merupakan ${current.targetType}?`;
+            document.getElementById('g1AlgebraDisplay').innerText = current.expr;
+
+            const optionsContainer = document.getElementById('g1Options');
+            optionsContainer.innerHTML = '';
+
+            current.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "btn-bounce bg-amber-100 hover:bg-amber-200 border-4 border-amber-400 text-slate-800 text-2xl font-bold py-5 rounded-2xl shadow-md transition";
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(opt, current, 1);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function readCurrentG1Question() {
+            const current = game1Data[g1Index];
+            speakTextRaw(`Vick, dari bentuk aljabar ${current.expr}, cari mana yang merupakan ${current.targetType}?`);
+        }
+
+        const game2Data = [
+            {
+                expr: "2a + 3a",
+                fruits: "🍎🍎 + 🍎🍎🍎",
+                options: ["5a", "5b", "6a"],
+                correct: "5a",
+                explanation: "Hebat Vick! 2 Apel + 3 Apel = 5 Apel (5a)!",
+                wrongExplanation: "Ingat Vick! Karena sama-sama Apel (huruf 'a'), angkanya tinggal kita tambahkan: 2 + 3 = 5. Jadi hasilnya adalah 5a.",
+                noteToWrite: "2a + 3a = 5a (Suku sejenis angka ditambahkan: 2 + 3 = 5)"
+            },
+            {
+                expr: "4b - 1b",
+                fruits: "🍌🍌🍌🍌 - 🍌",
+                options: ["2b", "3b", "5b"],
+                correct: "3b",
+                explanation: "Pintar Vick! 4 Pisang dikurangi 1 Pisang = 3 Pisang (3b)!",
+                wrongExplanation: "Yuk kita hitung pengurangan pisangnya Vick: 4 - 1 = 3. Karena buahnya Pisang (huruf 'b'), maka jawabannya 3b.",
+                noteToWrite: "4b - 1b = 3b (4 dikurangi 1 = 3)"
+            },
+            {
+                expr: "3a + 2b",
+                fruits: "🍎🍎🍎 + 🍌🍌",
+                options: ["5ab", "3a + 2b", "5a"],
+                correct: "3a + 2b",
+                explanation: "Luar biasa Vick! Apel (a) dan Pisang (b) BEDA jenis, jadi TIDAK BISA dijumlahkan!",
+                wrongExplanation: "Hati-hati Vick! Apel (a) dan Pisang (b) adalah buah/suku yang BERBEDA. Suku yang berbeda TIDAK BISA digabung, jadi bentuknya tetap 3a + 2b.",
+                noteToWrite: "3a + 2b = 3a + 2b (Suku beda jenis TIDAK BISA digabung)"
+            },
+            {
+                expr: "2 × (a + b)",
+                fruits: "📦2 Keranjang × (🍎 + 🍌)",
+                options: ["2a + 2b", "2a + b", "a + 2b"],
+                correct: "2a + 2b",
+                explanation: "Keren Vick! Setiap buah di dalam kurung dikalikan 2, jadi 2a + 2b!",
+                wrongExplanation: "Ingat sifat perkalian kurung Vick! Angka 2 di luar kurung harus dikalikan ke 'a' dan juga ke 'b'. Jadi 2 × a = 2a, dan 2 × b = 2b. Hasilnya 2a + 2b.",
+                noteToWrite: "2 × (a + b) = 2a + 2b (Sifat Distributif Perkalian)"
+            }
+        ];
+
+        let g2Index = 0;
+
+        function startGame2() {
+            g2Index = 0;
+            activeGame = 2;
+            showSection('game2');
+            loadG2Question();
+        }
+
+        function loadG2Question() {
+            const current = game2Data[g2Index];
+            document.getElementById('g2Level').innerText = `Soal ${g2Index + 1} dari ${game2Data.length}`;
+            document.getElementById('g2VisualExpr').innerText = current.expr;
+            document.getElementById('g2VisualFruits').innerText = current.fruits;
+
+            const optionsContainer = document.getElementById('g2Options');
+            optionsContainer.innerHTML = '';
+
+            current.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "btn-bounce bg-purple-100 hover:bg-purple-200 border-4 border-purple-400 text-purple-900 text-2xl font-bold py-5 rounded-2xl shadow-md transition";
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(opt, current, 2);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function readCurrentG2Question() {
+            const current = game2Data[g2Index];
+            speakTextRaw(`Vick, berapa hasil dari ${current.expr}?`);
+        }
+
+        let currentModalTextToRead = "";
+
+        function handleAnswer(selectedOption, questionObj, gameType) {
+            const isCorrect = selectedOption === questionObj.correct;
+
+            const modal = document.getElementById('explanationModal');
+            const modalHeaderBg = document.getElementById('modalHeaderBg');
+            const modalStatusIcon = document.getElementById('modalStatusIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalExplanationText = document.getElementById('modalExplanationText');
+            const modalNoteInstruction = document.getElementById('modalNoteInstruction');
+
+            if (isCorrect) {
+                playSound('correct');
+                addStars(15);
+                modalHeaderBg.className = "p-4 rounded-2xl text-center space-y-1 bg-emerald-100 border-2 border-emerald-400";
+                modalStatusIcon.innerText = "🎉";
+                modalTitle.innerText = "Jawaban Vick BENAR!";
+                modalTitle.className = "text-xl md:text-2xl font-bold text-emerald-800";
+                modalExplanationText.innerText = questionObj.explanation;
+                modalNoteInstruction.innerText = `✍️ Catatan Vick: ${questionObj.noteToWrite}`;
+                currentModalTextToRead = `Jawaban Vick Benar! ${questionObj.explanation}. Catat di buku tulis: ${questionObj.noteToWrite}`;
+            } else {
+                playSound('wrong');
+                modalHeaderBg.className = "p-4 rounded-2xl text-center space-y-1 bg-rose-100 border-2 border-rose-400";
+                modalStatusIcon.innerText = "✏️";
+                modalTitle.innerText = "Yuk Pelajari Bersama Vick!";
+                modalTitle.className = "text-xl md:text-2xl font-bold text-rose-800";
+                modalExplanationText.innerText = questionObj.wrongExplanation;
+                modalNoteInstruction.innerText = `✍️ Tulis Pembahasan Ini di Buku Vick:\n"${questionObj.noteToWrite}"`;
+                currentModalTextToRead = `Belum tepat Vick, mari pelajari. ${questionObj.wrongExplanation}. Tolong catat kalimat ini di buku tulismu: ${questionObj.noteToWrite}`;
+            }
+
+            modal.classList.remove('hidden');
+            // Otomatis bacakan pembahasan untuk Vick
+            speakTextRaw(currentModalTextToRead);
+        }
+
+        function speakModalText() {
+            if(currentModalTextToRead) {
+                speakTextRaw(currentModalTextToRead);
+            }
+        }
+
+        function closeModalAndContinue() {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            document.getElementById('explanationModal').classList.add('hidden');
+
+            if (activeGame === 1) {
+                g1Index++;
+                if (g1Index < game1Data.length) {
+                    loadG1Question();
+                } else {
+                    playSound('star');
+                    alert("🎉 HOREEE! Selamat Vick Praditya Podutolo! Kamu telah menyelesaikan Mini Game 1 dengan sangat luar biasa! ⭐");
+                    showSection('menu');
+                }
+            } else if (activeGame === 2) {
+                g2Index++;
+                if (g2Index < game2Data.length) {
+                    loadG2Question();
+                } else {
+                    playSound('star');
+                    alert("🏆 HEBAT SEKALI VICK PRADITYA PODUTOLO! Kamu berhasil menyelesaikan semua tantangan Pesta Buah Aljabar! ⭐");
+                    showSection('menu');
+                }
+            }
+        }
+
+        window.onload = function() {
+            // Initialize main menu
+            showSection('menu');
+        };
+    </script>
+</body>
+</html>
